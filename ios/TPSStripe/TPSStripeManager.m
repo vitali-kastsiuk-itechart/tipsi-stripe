@@ -181,6 +181,9 @@ RCT_EXPORT_METHOD(cancelApplePayRequest:(RCTPromiseResolveBlock)resolve
 RCT_EXPORT_METHOD(createTokenWithCard:(NSDictionary *)params
                                 resolver:(RCTPromiseResolveBlock)resolve
                                 rejecter:(RCTPromiseRejectBlock)reject) {
+    promiseResolver = resolve;
+    promiseRejector = reject;
+
     if(!requestIsCompleted) {
         NSDictionary *error = [errorCodes valueForKey:kErrorKeyBusy];
         reject(error[kErrorKeyCode], error[kErrorKeyDescription], nil);
@@ -222,6 +225,9 @@ RCT_EXPORT_METHOD(createTokenWithCard:(NSDictionary *)params
 RCT_EXPORT_METHOD(createTokenWithBankAccount:(NSDictionary *)params
                     resolver:(RCTPromiseResolveBlock)resolve
                     rejecter:(RCTPromiseRejectBlock)reject) {
+    promiseResolver = resolve;
+    promiseRejector = reject;
+
     if(!requestIsCompleted) {
         NSDictionary *error = [errorCodes valueForKey:kErrorKeyBusy];
         reject(error[kErrorKeyCode], error[kErrorKeyDescription], nil);
@@ -531,7 +537,7 @@ RCT_EXPORT_METHOD(openApplePaySetup) {
                didCreateSource:(STPSource *)source
                    completion:(STPErrorBlock)completion {
     [RCTPresentedViewController() dismissViewControllerAnimated:YES completion:nil];
-    
+
     requestIsCompleted = YES;
     completion(nil);
     [self resolvePromise:[self convertSourceObject:source]];
@@ -693,7 +699,7 @@ RCT_EXPORT_METHOD(openApplePaySetup) {
         [owner setValue:source.owner.email forKey:@"email"];
         [owner setValue:source.owner.name forKey:@"name"];
         [owner setValue:source.owner.phone forKey:@"phone"];
-        
+
         if (source.owner.verifiedAddress) {
             [owner setObject:source.owner.verifiedAddress forKey:@"verifiedAddress"];
         }
